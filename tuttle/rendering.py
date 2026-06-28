@@ -232,7 +232,12 @@ def render_invoice(
     # to hours, days, or a fixed price — see issue #358.
     contract_unit = getattr(invoice.contract, "unit", None)
     if contract_unit is not None:
-        unit_header = unit_label(contract_unit.value, 2)
+        # Fixed-price contracts use "fixed_price" as the item unit,
+        # not the contract's TimeUnit — reflect that in the header.
+        if invoice.contract.is_fixed_price:
+            unit_header = unit_label("fixed_price", 2)
+        else:
+            unit_header = unit_label(contract_unit.value, 2)
     else:
         unit_header = labels.get("unit", "Unit")
 
